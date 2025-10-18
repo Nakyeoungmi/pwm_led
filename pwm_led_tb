@@ -1,0 +1,43 @@
+`timescale 1ns / 1ps
+
+module pwm_led_tb;
+
+    reg clk;
+    reg rst_btn;
+    reg [7:0] dip_sw;
+    wire led_out;
+    wire [7:0] seg;
+    wire [7:0] seg_sel;
+
+   
+    pwm_led uut(
+        .clk(clk),
+        .rst_btn(rst_btn),
+        .dip_sw(dip_sw),
+        .led_out(led_out),
+        .seg(seg),
+        .seg_sel(seg_sel)
+    );
+
+    initial begin
+        clk = 0;
+        forever #500 clk = ~clk;
+    end
+
+    initial begin
+        rst_btn = 1;       
+        dip_sw  = 8'd0;    // 초기 reference 0
+        #2000;             
+        rst_btn = 0;     
+
+        #1000000 dip_sw = 8'd0;    // 0%
+        #1000000 dip_sw = 8'd64;   // 25%
+        #1000000 dip_sw = 8'd128;  // 50%
+        #1000000 dip_sw = 8'd191;  // 75%
+        #1000000 dip_sw = 8'd255;  // 100%
+
+        #1000000;
+        $finish;
+    end
+
+endmodule
